@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AsyncProgressReporter" Version="2.0.7" />
+    <PackageReference Include="AuthenticatedEncryption" Version="2.0.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+    <PackageReference Include="Refit" Version="5.2.1" />
+    <PackageReference Include="sharpcompress" Version="0.26.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
+    <PackageReference Include="YamlDotNet" Version="8.1.2" />
+  </ItemGroup>
+
+</Project>
