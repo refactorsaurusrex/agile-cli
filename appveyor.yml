@@ -1,0 +1,18 @@
+version: "{build}"
+image: Visual Studio 2019
+build_script:
+- pwsh: '& ".\build.ps1"'
+test_script:
+- dotnet test .\src\AgileCli.Tests\AgileCli.Tests.csproj -c Release
+deploy_script:
+- pwsh: '& ".\deploy.ps1"'
+environment:
+  psgallery:
+    secure: Fq58SLrG0xqT1Z2U16sv0p4I1FX3HHxLHzVJ4XC/9ErAVKkamTGex6yyCo22valo
+  myget:
+    secure: HpKJZwWf6ejRmke8xZidwW5Y15FoaRuVUI8c6ejHL/lX338o3rMnFP81R0pUOBvk
+skip_commits:
+  files:
+    - '**/*.md'
+install:
+  - pwsh: Install-Module -Name PowerShellGet -MinimumVersion 2.2.3 -Force
