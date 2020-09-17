@@ -46,7 +46,7 @@ namespace AgileCli.Services
             }
 
             var allBoardsResponse = await _jira.GetBoards();
-            var targetBoard = allBoardsResponse.Boards.SingleOrDefault(x => x.Name == boardName) ??
+            var targetBoard = allBoardsResponse.Boards.SingleOrDefault(x => x.Name.Equals(boardName, StringComparison.InvariantCultureIgnoreCase)) ??
                               throw new InvalidOperationException($"Unable to locate the board '{boardName}'.");
 
             var sprintCollection = await _jira.GetSprints(targetBoard.Id);
@@ -79,9 +79,6 @@ namespace AgileCli.Services
                         wasUnplanned = addedJsTime > startJsDate;
                     }
 
-                    //var addedJsTime = change.SelectToken("added")?.Parent?.Value<long>();
-                    //var wasUnplanned = addedJsTime.HasValue && addedJsTime.Value > startJsDate;
-                    
                     var existingIssue = sprint.Issues.FirstOrDefault(x => x.Key == key);
                     if (existingIssue == null)
                     {
