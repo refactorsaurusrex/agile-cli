@@ -19,7 +19,7 @@ AgileCli is cross-platform and will work on Windows, Mac, and Linux. The only ha
 
 ### Installation
 
-Install from the PowerShell Gallery:
+Install from the [PowerShell Gallery](https://www.powershellgallery.com/packages/AgileCli):
 
 ```powershell
 Install-Module AgileCli
