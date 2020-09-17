@@ -10,9 +10,18 @@ namespace AgileCli.Cmdlets
     {
         protected override void Run()
         {
-            var config = AgileCliConfigurationManager.Load();
             var process = SystemProcessFactory.Create();
-            config.Open(process);
+
+            try
+            {
+                var config = AgileCliConfigurationManager.Load();
+                config.Open(process);
+            }
+            catch (AgileCliConfigurationException e)
+            {
+                process.Start(e.ConfigurationFilePath);
+                WriteError(new ErrorRecord(e, "", ErrorCategory.InvalidOperation, null));
+            }
         }
     }
 }

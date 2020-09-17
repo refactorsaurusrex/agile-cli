@@ -28,7 +28,17 @@ namespace AgileCli.Services
             if (!File.Exists(filePath)) 
                 return new AgileCliConfigurationManager();
             var text = File.ReadAllText(GetFilePath());
-            return deserializer.Deserialize<AgileCliConfigurationManager>(text);
+
+            try
+            {
+                return deserializer.Deserialize<AgileCliConfigurationManager>(text);
+            }
+            catch (Exception e)
+            {
+                const string message = "An error occurred while loading your AgileCli configuration file. Please open the file, ensure all "+
+                                       "values are valid, and try again. If you need help, refer to the documentation on GitHub.";
+                throw new AgileCliConfigurationException(message, e, filePath);
+            }
         }
 
         public AgileCliConfigurationManager() => _filePath = GetFilePath();

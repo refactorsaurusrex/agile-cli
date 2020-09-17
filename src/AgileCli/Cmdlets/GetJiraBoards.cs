@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 using AgileCli.Services;
 using JetBrains.Annotations;
@@ -7,6 +8,7 @@ namespace AgileCli.Cmdlets
 {
     [PublicAPI]
     [Cmdlet(VerbsCommon.Get, "JiraBoards")]
+    [OutputType(typeof(IEnumerable<string>))]
     public class GetJiraBoards : JiraCmdletBase
     {
         // Override to hide. Properties not used here.
