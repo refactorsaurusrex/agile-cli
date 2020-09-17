@@ -36,7 +36,7 @@ namespace AgileCli.Services
         public string GetPercentOnTargetSprints(double target)
         {
             var total = _sprints.Count;
-            var offTarget = _sprints.Count(x => x.PercentRollover > 0.15 || x.PercentRollover < -0.15);
+            var offTarget = _sprints.Count(x => x.PercentRollover > target || x.PercentRollover < target * -1);
             return ((total - offTarget) / (double)total).ToString("p0");
         }
     }
