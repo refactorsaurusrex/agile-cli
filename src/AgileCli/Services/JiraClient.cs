@@ -18,8 +18,7 @@ namespace AgileCli.Services
 
         public JiraClient(string jiraHostname, string accessToken)
         {
-            var token = TokenManagerFactory.Create(Secrets.JiraToken).Retrieve();
-            _jira = AuthenticatedRestService.For<IJiraApi>(token, $"https://{jiraHostname}");
+            _jira = AuthenticatedRestService.For<IJiraApi>(accessToken, $"https://{jiraHostname}");
         }
 
         public bool DisableCache { get; set; }
