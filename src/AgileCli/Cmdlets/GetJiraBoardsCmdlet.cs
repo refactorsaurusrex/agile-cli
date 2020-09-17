@@ -9,7 +9,7 @@ namespace AgileCli.Cmdlets
     [PublicAPI]
     [Cmdlet(VerbsCommon.Get, "JiraBoards")]
     [OutputType(typeof(IEnumerable<string>))]
-    public class GetJiraBoards : JiraCmdletBase
+    public class GetJiraBoardsCmdlet : JiraCmdletBase
     {
         // Override to hide. Properties not used here.
         public override string BoardName { get; set; }
