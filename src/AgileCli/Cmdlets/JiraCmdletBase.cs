@@ -1,6 +1,7 @@
 ﻿using System.Management.Automation;
 using AgileCli.Infrastructure;
 using AgileCli.Services;
+using AsyncProgressReporter;
 
 namespace AgileCli.Cmdlets
 {
@@ -18,6 +19,8 @@ namespace AgileCli.Cmdlets
         protected string JiraAccessToken { get; private set; }
 
         protected string JiraHostName { get; private set; }
+
+        protected string StatusMap(ProgressInfo info) => $"Completed {info.CompletedItems} of {info.TotalItems} sprints";
 
         protected override void BeginProcessing()
         {

@@ -17,9 +17,11 @@ namespace AgileCli.Cmdlets
 
         protected override void Run()
         {
+            ShowProgress("Getting Jira Boards", "This should only take a few seconds...");
             var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
             var boards = client.GetBoards().Result;
             var filtered = boards.OrderBy(x => x.Name).Select(x => new { x.Name });
+            HideProgress();
             WriteObject(filtered, true);
         }
     }
