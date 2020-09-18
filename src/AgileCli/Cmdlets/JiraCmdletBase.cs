@@ -14,7 +14,7 @@ namespace AgileCli.Cmdlets
         public virtual string BoardName { get; set; }
 
         [Parameter]
-        public virtual int SprintCount { get; set; } = 10;
+        public virtual int SprintCount { get; set; }
 
         protected string JiraAccessToken { get; private set; }
 
@@ -44,6 +44,9 @@ namespace AgileCli.Cmdlets
                     throw new PSInvalidOperationException(missingBoard);
                 BoardName = config.DefaultBoardName;
             }
+
+            if (SprintCount == 0)
+                SprintCount = config.DefaultSprintCount;
         }
     }
 }

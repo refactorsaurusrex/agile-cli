@@ -47,6 +47,8 @@ namespace AgileCli.Services
 
         public string DefaultBoardName { get; set; }
 
+        public int DefaultSprintCount { get; set; } = 5;
+
         public int SprintTargetPercent
         {
             get => _sprintTargetPercent > 1 || _sprintTargetPercent <= 0 ? DefaultSprintTargetPercent : _sprintTargetPercent;
