@@ -56,7 +56,7 @@ namespace AgileCli.Services
 
                 foreach (var sprint in filteredSprints)
                 {
-                    await reporter.UpdateProgress($"Pulling data for spring {sprint.Name}...", ++count, total);
+                    await reporter.UpdateProgress($"Pulling data for sprint {sprint.Name}...", ++count, total);
                     var sprintDetails = await _jira.GetSprintDetails(targetBoard.Id, sprint.Id);
                     var startJsDate = sprintDetails.SelectToken("startTime")?.Value<long>() ??
                                       throw new InvalidOperationException("Unable to determine sprint start time.");
