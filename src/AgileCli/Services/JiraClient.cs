@@ -33,9 +33,9 @@ namespace AgileCli.Services
             return boardsResponse.Boards;
         }
 
-        public async Task<PSReportEngine> CreateSprintReportEngine(string boardName, int sprintCount, IProgressReporter reporter)
+        public async Task<PSReportEngine> CreateSprintReportEngine(string boardName, int sprintCount, IProgressReporter reporter, bool getAssignees)
         {
-            var cacheKey = $"PSReportEngine{boardName}{sprintCount}";
+            var cacheKey = $"PSReportEngine{boardName}{sprintCount}{getAssignees}";
             if (!DisableCache && MemoryCache.Default[cacheKey] is PSReportEngine cachedEngine)
             {
                 reporter.CompleteAdding();
@@ -86,6 +86,18 @@ namespace AgileCli.Services
                         if (existingIssue == null)
                         {
                             var issue = new Issue(key);
+
+                            //if (getAssignees)
+                            //{
+                            //    var issueResponse = await _jira.GetIssueAssignee(key);
+                            //    var assignee = issueResponse.SelectToken("fields.assignee.displayName")?.Value<string>();
+
+                            //    if (string.IsNullOrWhiteSpace(assignee))
+                            //        throw new InvalidOperationException($"Unable to retrieve assignee name for issue {key}");
+
+                            //    issue.Assignee = assignee;
+                            //}
+
                             if (points.HasValue)
                                 issue.Points = points.Value;
                             if (isDone.HasValue)
@@ -101,6 +113,27 @@ namespace AgileCli.Services
                                 existingIssue.WasCompleted = isDone.Value;
                             existingIssue.WasUnplanned = wasUnplanned;
                         }
+                    }
+                }
+
+                if (getAssignees)
+                {
+                    var assigneeRequests = new List<(Issue, Task<JObject>)>();
+                    foreach (var issue in filteredSprints.SelectMany(x => x.Issues))
+                    {
+                        var task = _jira.GetIssueAssignee(issue.Key);
+                        assigneeRequests.Add((issue, task));
+                    }
+
+                    foreach (var (issue, task) in assigneeRequests)
+                    {
+                        var issueResponse = task.Result;
+                        var assignee = issueResponse.SelectToken("fields.assignee.displayName")?.Value<string>();
+
+                        if (string.IsNullOrWhiteSpace(assignee))
+                            throw new InvalidOperationException($"Unable to retrieve assignee name for issue {issue.Key}");
+
+                        issue.Assignee = assignee;
                     }
                 }
 

@@ -6,18 +6,18 @@ using JetBrains.Annotations;
 namespace AgileCli.Cmdlets
 {
     [PublicAPI]
-    [Cmdlet(VerbsCommon.Get, "ProjectVelocity")]
-    public class GetProjectVelocityCmdlet : JiraCmdletBase
+    [Cmdlet(VerbsCommon.Get, "UserPointAverages")]
+    public class GetUserPointAveragesCmdlet : JiraCmdletBase
     {
         protected override void Run()
         {
             var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
             var reporter = new ProgressReporter();
-            var task = client.CreateSprintReportEngine(BoardName, SprintCount, reporter, getAssignees: false);
+            var task = client.CreateSprintReportEngine(BoardName, SprintCount, reporter, getAssignees: true);
             ShowProgressWait(reporter, "Getting sprint history...", statusDescriptionMap: StatusMap);
             var engine = task.Result;
-            var avgVelocity = engine.GetVelocityAverages();
-            WriteObject(avgVelocity);
+            var report = engine.GetUserAverages();
+            WriteObject(report, true);
         }
     }
 }

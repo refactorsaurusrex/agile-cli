@@ -13,7 +13,7 @@ namespace AgileCli.Cmdlets
         {
             var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
             var reporter = new ProgressReporter();
-            var task = client.CreateSprintReportEngine(BoardName, SprintCount, reporter);
+            var task = client.CreateSprintReportEngine(BoardName, SprintCount, reporter, getAssignees: false);
             ShowProgressWait(reporter, "Getting sprint history...", statusDescriptionMap: StatusMap);
             var engine = task.Result;
             var velocityReport = engine.GetVelocityReport();

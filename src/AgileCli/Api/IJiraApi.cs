@@ -17,5 +17,8 @@ namespace AgileCli.Api
 
         [Get("/rest/greenhopper/1.0/rapid/charts/scopechangeburndownchart.json?rapidViewId={rapidViewId}&sprintId={sprintId}")]
         Task<JObject> GetSprintDetails(int rapidViewId, int sprintId);
+
+        [Get("/rest/api/3/issue/{issueKey}?fields=assignee")]
+        Task<JObject> GetIssueAssignee(string issueKey);
     }
 }

@@ -39,5 +39,23 @@ namespace AgileCli.Services
             var offTarget = _sprints.Count(x => x.PercentRollover > target || x.PercentRollover < target * -1);
             return ((total - offTarget) / (double)total).ToString("p0");
         }
+
+        public object GetUserAverages() =>
+            _sprints
+                .SelectMany(sprint => sprint.Issues)
+                .GroupBy(issue => issue.Assignee)
+                .Select(grouping =>
+                {
+                    var committed = grouping.Sum(issue => issue.Points) / (double)_sprints.Count;
+                    var rollover = grouping.Where(issue => !issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count;
+                    return new
+                    {
+                        Assignee = grouping.Key,
+                        AverageCommitted = committed.ToString("N1"),
+                        AverageCompleted = (grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count).ToString("N1"),
+                        AverageRollover = rollover.ToString("N1"),
+                        RolloverPercent = committed == 0.0 ? "0%" : (rollover / committed).ToString("p0")
+                    };
+                });
     }
 }
