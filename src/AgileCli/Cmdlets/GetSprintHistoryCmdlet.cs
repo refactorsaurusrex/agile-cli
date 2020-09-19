@@ -1,6 +1,5 @@
 ﻿using System.Management.Automation;
 using AgileCli.Services;
-using AsyncProgressReporter;
 using JetBrains.Annotations;
 
 namespace AgileCli.Cmdlets
