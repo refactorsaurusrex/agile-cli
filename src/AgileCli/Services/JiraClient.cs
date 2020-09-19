@@ -118,7 +118,7 @@ namespace AgileCli.Services
                 var assignee = issueResponse.SelectToken("fields.assignee.displayName")?.Value<string>();
 
                 if (string.IsNullOrWhiteSpace(assignee))
-                    throw new InvalidOperationException($"Unable to retrieve assignee name for issue {issue.Key}");
+                    assignee = "Unassigned";
 
                 issue.Assignee = assignee;
             }
