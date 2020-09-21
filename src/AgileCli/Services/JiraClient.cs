@@ -5,9 +5,7 @@ using System.Runtime.Caching;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AgileCli.Api;
-using AgileCli.Infrastructure;
 using AgileCli.Models;
-using AsyncProgressReporter;
 using Newtonsoft.Json.Linq;
 
 namespace AgileCli.Services
@@ -15,12 +13,9 @@ namespace AgileCli.Services
     public class JiraClient
     {
         private readonly IJiraApi _jira;
-        private static readonly CacheItemPolicy Policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(60) };
+        private static readonly CacheItemPolicy CachePolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(60) };
 
-        public JiraClient(string jiraHostname, string accessToken)
-        {
-            _jira = AuthenticatedRestService.For<IJiraApi>(accessToken, $"https://{jiraHostname}");
-        }
+        public JiraClient(string jiraHostname, string accessToken) => _jira = AuthenticatedRestService.For<IJiraApi>(accessToken, $"https://{jiraHostname}");
 
         public bool DisableCache { get; set; }
 
@@ -104,9 +99,13 @@ namespace AgileCli.Services
                 }
             }
 
+            var counter = 0;
             var assigneeRequests = new Queue<(Issue, Task<JObject>)>();
             foreach (var issue in filteredSprints.SelectMany(x => x.Issues))
             {
+                if (counter++ % 100 == 0) 
+                    await Task.Delay(5000);
+
                 var task = _jira.GetIssueAssignee(issue.Key);
                 assigneeRequests.Enqueue((issue, task));
             }
@@ -124,7 +123,7 @@ namespace AgileCli.Services
             }
 
             var engine = new PSReportEngine(filteredSprints);
-            MemoryCache.Default.Set(cacheKey, engine, Policy);
+            MemoryCache.Default.Set(cacheKey, engine, CachePolicy);
             return engine;
         }
 
