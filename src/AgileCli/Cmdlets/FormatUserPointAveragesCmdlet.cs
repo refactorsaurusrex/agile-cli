@@ -19,7 +19,8 @@ namespace AgileCli.Cmdlets
                 AverageCommitted = x.AverageCommitted.ToString("N1"),
                 AverageCompleted = x.AverageCompleted.ToString("N1"),
                 AverageRollover = x.AverageRollover.ToString("N1"),
-                RolloverPercent = x.RolloverPercent.ToString("p0")
+                RolloverPercent = x.RolloverPercent.ToString("p0"),
+                AverageUnplanned = x.AverageUnplanned.ToString("N1")
             });
 
             WriteObject(results);

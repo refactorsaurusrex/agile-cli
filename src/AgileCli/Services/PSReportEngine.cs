@@ -48,7 +48,8 @@ namespace AgileCli.Services
                 AverageCommitted = x.AverageCommitted.ToString("N1"),
                 AverageCompleted = x.AverageCompleted.ToString("N1"),
                 AverageRollover = x.AverageRollover.ToString("N1"),
-                RolloverPercent = x.RolloverPercent.ToString("p0")
+                RolloverPercent = x.RolloverPercent.ToString("p0"),
+                AverageUnplanned = x.AverageUnplanned.ToString("N1")
             });
         }
 
@@ -65,9 +66,10 @@ namespace AgileCli.Services
                     {
                         Assignee = grouping.Key,
                         AverageCommitted = committed,
-                        AverageCompleted = (grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count),
+                        AverageCompleted = grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count,
                         AverageRollover = rollover,
-                        RolloverPercent = committed == 0.0 ? 0.0 : rollover / committed
+                        RolloverPercent = committed == 0.0 ? 0.0 : rollover / committed,
+                        AverageUnplanned = grouping.Where(issue => issue.WasUnplanned).Sum(issue => issue.Points) / (double)_sprints.Count
                     };
                 })
                 .OrderBy(x => x.Assignee);
