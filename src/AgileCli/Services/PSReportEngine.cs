@@ -40,40 +40,34 @@ namespace AgileCli.Services
             return ((total - offTarget) / (double)total).ToString("p0");
         }
 
-        public object GetUserAverages(bool raw)
+        public IEnumerable<dynamic> GetFormattedUserAverages()
         {
-            var assigneeGroups = _sprints.SelectMany(sprint => sprint.Issues).GroupBy(issue => issue.Assignee);
-
-            if (raw)
+            return GetRawUserAverages().Select(x => new
             {
-                return assigneeGroups.Select(grouping =>
-                    {
-                        var committed = grouping.Sum(issue => issue.Points) / (double)_sprints.Count;
-                        var rollover = grouping.Where(issue => !issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count;
-                        return new
-                        {
-                            Assignee = grouping.Key,
-                            AverageCommitted = committed,
-                            AverageCompleted = (grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count),
-                            AverageRollover = rollover,
-                            RolloverPercent = committed == 0.0 ? 0.0 : rollover / committed
-                        };
-                    })
-                    .OrderBy(x => x.Assignee);
-            }
+                x.Assignee,
+                AverageCommitted = x.AverageCommitted.ToString("N1"),
+                AverageCompleted = x.AverageCompleted.ToString("N1"),
+                AverageRollover = x.AverageRollover.ToString("N1"),
+                RolloverPercent = x.RolloverPercent.ToString("p0")
+            });
+        }
 
-            return assigneeGroups.Select(grouping =>
+        public IEnumerable<dynamic> GetRawUserAverages()
+        {
+            return _sprints
+                .SelectMany(sprint => sprint.Issues)
+                .GroupBy(issue => issue.Assignee)
+                .Select(grouping =>
                 {
                     var committed = grouping.Sum(issue => issue.Points) / (double)_sprints.Count;
                     var rollover = grouping.Where(issue => !issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count;
                     return new
                     {
                         Assignee = grouping.Key,
-                        AverageCommitted = committed.ToString("N1"),
-                        AverageCompleted =
-                            (grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count).ToString("N1"),
-                        AverageRollover = rollover.ToString("N1"),
-                        RolloverPercent = committed == 0.0 ? "0%" : (rollover / committed).ToString("p0")
+                        AverageCommitted = committed,
+                        AverageCompleted = (grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count),
+                        AverageRollover = rollover,
+                        RolloverPercent = committed == 0.0 ? 0.0 : rollover / committed
                     };
                 })
                 .OrderBy(x => x.Assignee);

@@ -21,7 +21,7 @@ namespace AgileCli.Cmdlets
 
         protected override void Run()
         {
-            var report = _engine.GetUserAverages(Raw);
+            var report = Raw ? _engine.GetRawUserAverages() : _engine.GetFormattedUserAverages();
             WriteObject(report, true);
         }
     }
