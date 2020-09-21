@@ -57,7 +57,7 @@ namespace AgileCli.Services
 
         public int SprintTargetPercent
         {
-            get => _sprintTargetPercent > 1 || _sprintTargetPercent <= 0 ? DefaultSprintTargetPercent : _sprintTargetPercent;
+            get => _sprintTargetPercent > 100 || _sprintTargetPercent <= 0 ? DefaultSprintTargetPercent : _sprintTargetPercent;
             set => _sprintTargetPercent = value;
         }
 
