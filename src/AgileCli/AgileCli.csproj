@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncProgressReporter" Version="2.0.7" />
+    <PackageReference Include="AsyncProgressReporter" Version="2.0.8" />
     <PackageReference Include="AuthenticatedEncryption" Version="2.0.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />

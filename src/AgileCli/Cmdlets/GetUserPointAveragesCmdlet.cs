@@ -8,14 +8,20 @@ namespace AgileCli.Cmdlets
     [Cmdlet(VerbsCommon.Get, "UserPointAverages")]
     public class GetUserPointAveragesCmdlet : JiraCmdletBase
     {
+        private PSReportEngine _engine;
+
         [Parameter]
         public SwitchParameter Raw { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+            _engine = CreateReportingEngine();
+        }
+
         protected override void Run()
         {
-            var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
-            var engine = client.CreateSprintReportEngine(BoardName, SprintCount).Result;
-            var report = engine.GetUserAverages(Raw);
+            var report = _engine.GetUserAverages(Raw);
             WriteObject(report, true);
         }
     }

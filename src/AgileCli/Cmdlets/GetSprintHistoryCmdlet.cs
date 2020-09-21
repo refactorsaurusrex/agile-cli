@@ -8,11 +8,17 @@ namespace AgileCli.Cmdlets
     [Cmdlet(VerbsCommon.Get, "SprintHistory")]
     public class GetSprintHistoryCmdlet : JiraCmdletBase
     {
+        private PSReportEngine _engine;
+
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+            _engine = CreateReportingEngine();
+        }
+
         protected override void Run()
         {
-            var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
-            var engine = client.CreateSprintReportEngine(BoardName, SprintCount).Result;
-            var velocityReport = engine.GetVelocityReport();
+            var velocityReport = _engine.GetVelocityReport();
             WriteObject(velocityReport, true);
         }
     }

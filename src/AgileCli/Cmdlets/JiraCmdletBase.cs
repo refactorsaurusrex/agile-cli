@@ -48,5 +48,14 @@ namespace AgileCli.Cmdlets
             if (SprintCount == 0)
                 SprintCount = config.DefaultSprintCount;
         }
+
+        protected PSReportEngine CreateReportingEngine()
+        {
+            var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
+            var task = client.CreateSprintReportEngine(BoardName, SprintCount);
+            ShowElapsedTimeProgress(task, "Getting Jira Sprint Data", "Please wait, this should only take a few seconds...");
+            HideProgress();
+            return task.Result;
+        }
     }
 }

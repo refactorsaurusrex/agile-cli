@@ -8,11 +8,17 @@ namespace AgileCli.Cmdlets
     [Cmdlet(VerbsCommon.Get, "ProjectVelocity")]
     public class GetProjectVelocityCmdlet : JiraCmdletBase
     {
+        private PSReportEngine _engine;
+
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+            _engine = CreateReportingEngine();
+        }
+
         protected override void Run()
         {
-            var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
-            var engine = client.CreateSprintReportEngine(BoardName, SprintCount).Result;
-            var avgVelocity = engine.GetVelocityAverages();
+            var avgVelocity = _engine.GetVelocityAverages();
             WriteObject(avgVelocity);
         }
     }

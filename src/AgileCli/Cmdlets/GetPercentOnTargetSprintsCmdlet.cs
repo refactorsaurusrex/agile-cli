@@ -8,12 +8,18 @@ namespace AgileCli.Cmdlets
     [Cmdlet(VerbsCommon.Get, "PercentOnTargetSprints")]
     public class GetPercentOnTargetSprintsCmdlet : JiraCmdletBase
     {
+        private PSReportEngine _engine;
+
+        protected override void BeginProcessing()
+        {
+            base.BeginProcessing();
+            _engine = CreateReportingEngine();
+        }
+
         protected override void Run()
         {
-            var client = new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
-            var engine = client.CreateSprintReportEngine(BoardName, SprintCount).Result;
             var config = AgileCliConfigurationManager.Load();
-            var onTarget = engine.GetPercentOnTargetSprints(config.GetSprintTargetPercent());
+            var onTarget = _engine.GetPercentOnTargetSprints(config.GetSprintTargetPercent());
             WriteObject(onTarget);
         }
     }
