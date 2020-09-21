@@ -8,6 +8,8 @@ namespace AgileCli.Services
     {
         private readonly string _filePath;
         private int _sprintTargetPercent;
+        private int _defaultSprintCount;
+        private const int AppDefaultSprintCount = 5;
         private const int DefaultSprintTargetPercent = 15;
 
         private static string GetFilePath()
@@ -47,7 +49,11 @@ namespace AgileCli.Services
 
         public string DefaultBoardName { get; set; }
 
-        public int DefaultSprintCount { get; set; } = 5;
+        public int DefaultSprintCount
+        {
+            get => _defaultSprintCount > 50 || _defaultSprintCount < 1 ? AppDefaultSprintCount : _defaultSprintCount;
+            set => _defaultSprintCount = value;
+        }
 
         public int SprintTargetPercent
         {

@@ -14,6 +14,7 @@ namespace AgileCli.Cmdlets
         public virtual string BoardName { get; set; }
 
         [Parameter]
+        [ValidateRange(1, 50)]
         public virtual int SprintCount { get; set; }
 
         protected string JiraAccessToken { get; private set; }
