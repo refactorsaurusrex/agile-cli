@@ -74,5 +74,29 @@ namespace AgileCli.Services
                 })
                 .OrderBy(x => x.Assignee);
         }
+
+        public object GetIssues(IssueType issueType, string assignee)
+        {
+            var results = _sprints.SelectMany(sprint => sprint.Issues, (sprint, issue) => new
+            {
+                sprint.Name,
+                Issue = issue.Key,
+                issue.Assignee,
+                issue.Points,
+                Unplanned = issue.WasUnplanned,
+                Completed = issue.WasCompleted
+            });
+
+            if (!string.IsNullOrWhiteSpace(assignee))
+                results = results.Where(x => x.Assignee == assignee);
+
+            return issueType switch
+            {
+                IssueType.Unplanned => results.Where(r => r.Unplanned),
+                IssueType.Rollover => results.Where(r => !r.Completed),
+                IssueType.Completed => results.Where(r => r.Completed),
+                _ => results
+            };
+        }
     }
 }
