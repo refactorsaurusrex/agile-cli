@@ -12,10 +12,10 @@ namespace AgileCli.Services
 
         public object GetVelocityAverages() => new
         {
-            AverageCommitted = (int)_sprints.Average(x => x.CommittedPoints),
-            AverageCompleted = (int)_sprints.Average(x => x.CompletedPoints),
-            AverageRollover = (int)_sprints.Average(x => x.RolloverPoints),
-            AverageUnplanned = (int)_sprints.Average(x => x.UnplannedPoints)
+            AverageCommitted = _sprints.Average(x => x.CommittedPoints).ToString("N1"),
+            AverageCompleted = _sprints.Average(x => x.CompletedPoints).ToString("N1"),
+            AverageRollover = _sprints.Average(x => x.RolloverPoints).ToString("N1"),
+            AverageUnplanned = _sprints.Average(x => x.UnplannedPoints).ToString("N1")
         };
 
         public object GetVelocityReport() =>
