@@ -103,7 +103,7 @@ namespace AgileCli.Services
             var assigneeRequests = new Queue<(Issue, Task<JObject>)>();
             foreach (var issue in filteredSprints.SelectMany(x => x.Issues))
             {
-                if (counter++ % 100 == 0) 
+                if (sprintCount > 9 && counter++ % 100 == 0) 
                     await Task.Delay(5000);
 
                 var task = _jira.GetIssueAssignee(issue.Key);
