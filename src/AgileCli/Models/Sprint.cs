@@ -15,7 +15,8 @@ namespace AgileCli.Models
 
         public int CompletedPoints => Issues.Where(x => x.WasCompleted).Sum(x => x.Points);
         public int CommittedPoints => Issues.Sum(x => x.Points);
-        public int UnplannedPoints => Issues.Where(x => x.WasUnplanned).Sum(x => x.Points);
+        // ReSharper disable once PossibleInvalidOperationException
+        public int UnplannedPoints => Issues.Where(x => x.WasUnplanned.Value).Sum(x => x.Points);
         public int RolloverPoints => Issues.Where(x => !x.WasCompleted).Sum(x => x.Points);
         public double PercentRollover => RolloverPoints / (double)CommittedPoints;
     }

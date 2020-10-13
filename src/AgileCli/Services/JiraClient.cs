@@ -67,7 +67,7 @@ namespace AgileCli.Services
                     var points = change.SelectToken("statC.newValue")?.Value<int>();
                     var isDone = change.SelectToken("column.done")?.Value<bool>();
 
-                    var wasUnplanned = false;
+                    bool? wasUnplanned = null;
                     var addedPath = change.SelectToken("added")?.Path;
                     if (addedPath != null)
                     {
@@ -85,7 +85,9 @@ namespace AgileCli.Services
                             issue.Points = points.Value;
                         if (isDone.HasValue)
                             issue.WasCompleted = isDone.Value;
-                        issue.WasUnplanned = wasUnplanned;
+
+                        if (wasUnplanned.HasValue)
+                            issue.WasUnplanned = wasUnplanned;
                         sprint.Issues.Add(issue);
                     }
                     else
@@ -94,10 +96,16 @@ namespace AgileCli.Services
                             existingIssue.Points = points.Value;
                         if (isDone.HasValue)
                             existingIssue.WasCompleted = isDone.Value;
-                        existingIssue.WasUnplanned = wasUnplanned;
+
+                        if (wasUnplanned.HasValue)
+                            existingIssue.WasUnplanned = wasUnplanned;
                     }
                 }
             }
+
+            var unknownPlannedState = filteredSprints.SelectMany(x => x.Issues).Where(x => !x.WasUnplanned.HasValue).Select(x => x.Key).ToList();
+            if (unknownPlannedState.Any())
+                throw new InvalidOperationException($"Unable to determine whether the following issues were planned or unplanned: {string.Join(',', unknownPlannedState)}");
 
             var counter = 0;
             var assigneeRequests = new Queue<(Issue, Task<JObject>)>();

@@ -69,7 +69,8 @@ namespace AgileCli.Services
                         AverageCompleted = grouping.Where(issue => issue.WasCompleted).Sum(issue => issue.Points) / (double)_sprints.Count,
                         AverageRollover = rollover,
                         RolloverPercent = committed == 0.0 ? 0.0 : rollover / committed,
-                        AverageUnplanned = grouping.Where(issue => issue.WasUnplanned).Sum(issue => issue.Points) / (double)_sprints.Count
+                        // ReSharper disable once PossibleInvalidOperationException
+                        AverageUnplanned = grouping.Where(issue => issue.WasUnplanned.Value).Sum(issue => issue.Points) / (double)_sprints.Count
                     };
                 })
                 .OrderBy(x => x.Assignee);
@@ -92,7 +93,8 @@ namespace AgileCli.Services
 
             return issueType switch
             {
-                IssueType.Unplanned => results.Where(r => r.Unplanned),
+                // ReSharper disable once PossibleInvalidOperationException
+                IssueType.Unplanned => results.Where(r => r.Unplanned.Value),
                 IssueType.Rollover => results.Where(r => !r.Completed),
                 IssueType.Completed => results.Where(r => r.Completed),
                 _ => results
