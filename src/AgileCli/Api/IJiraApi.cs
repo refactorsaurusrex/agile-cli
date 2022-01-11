@@ -20,5 +20,11 @@ namespace AgileCli.Api
 
         [Get("/rest/api/3/issue/{issueKey}?fields=assignee")]
         Task<JObject> GetIssueAssignee(string issueKey);
+
+        [Post("/rest/api/3/search")]
+        Task<IssueKeyResponse> GetIssueKeys([Body] JqlQuery jql);
+
+        [Get("/rest/api/3/issue/{key}/changelog")]
+        Task<IssueChangeLogResponse> GetIssueChangeLog(string key);
     }
 }

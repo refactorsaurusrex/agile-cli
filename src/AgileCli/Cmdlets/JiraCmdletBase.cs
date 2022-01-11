@@ -37,14 +37,14 @@ namespace AgileCli.Cmdlets
                 throw new PSInvalidOperationException(missingHostName);
             JiraHostName = config.JiraHostName;
 
-            const string missingBoard = "A board name was not specified and no default board name has been saved. Please either use the '-BoardName' "+
-                                        "parameter, or use the 'Edit-AgileCliConfiguration' cmdlet to save a default board name.";
-            if (string.IsNullOrWhiteSpace(BoardName))
-            {
-                if (string.IsNullOrWhiteSpace(config.DefaultBoardName))
-                    throw new PSInvalidOperationException(missingBoard);
-                BoardName = config.DefaultBoardName;
-            }
+            //const string missingBoard = "A board name was not specified and no default board name has been saved. Please either use the '-BoardName' "+
+            //                            "parameter, or use the 'Edit-AgileCliConfiguration' cmdlet to save a default board name.";
+            //if (string.IsNullOrWhiteSpace(BoardName))
+            //{
+            //    if (string.IsNullOrWhiteSpace(config.DefaultBoardName))
+            //        throw new PSInvalidOperationException(missingBoard);
+            //    BoardName = config.DefaultBoardName;
+            //}
 
             if (SprintCount == 0)
                 SprintCount = config.DefaultSprintCount;
@@ -58,5 +58,7 @@ namespace AgileCli.Cmdlets
             HideProgress();
             return task.Result;
         }
+
+        protected JiraClient GetJiraClient() => new JiraClient(JiraHostName, JiraAccessToken) { DisableCache = NoCache };
     }
 }

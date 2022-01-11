@@ -28,6 +28,50 @@ namespace AgileCli.Services
             return boardsResponse.Boards;
         }
 
+        public async Task<List<IssueKey>> GetIssueKeys(string jql)
+        {
+            //if (!DisableCache && MemoryCache.Default[nameof(GetIssueKeys)] is List<Board> boards)
+            //    return boards;
+
+            var keys = new List<IssueKey>();
+            var startAt = 0;
+            while (true)
+            {
+                var issueKeys = await _jira.GetIssueKeys(new JqlQuery { Jql = jql, StartAt = startAt });
+                keys.AddRange(issueKeys.Issues);
+
+                if (issueKeys.IsLast)
+                    break;
+
+                startAt = issueKeys.StartAt + issueKeys.MaxResults;
+            }
+
+            return keys;
+        }
+
+        public async Task<List<CapExResult>> GetChangeLogs(IEnumerable<IssueKey> keys)
+        {
+            var result = new List<CapExResult>();
+
+            foreach (var key in keys)
+            {
+                var response = await _jira.GetIssueChangeLog(key.Key);
+                var changes = response.Changes.Where(x => x.Details.Any(y => y.Type == "status")).ToList();
+                var capex = new CapExResult
+                {
+                    Assignee = key.Fields.Assignee.DisplayName,
+                    Key = key.Key,
+                    StartDate = changes.Select(x => x.Timestamp).Min(),
+                    EndDate = changes.Select(x => x.Timestamp).Max()
+                };
+
+                result.Add(capex);
+
+            }
+
+            return result;
+        }
+
         public async Task<PSReportEngine> CreateSprintReportEngine(string boardName, int sprintCount)
         {
             var cacheKey = $"PSReportEngine{boardName}{sprintCount}";
@@ -136,5 +180,15 @@ namespace AgileCli.Services
         }
 
         private DateTime ConvertJsTime(long jsTime) => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(jsTime);
+    }
+
+    public class CapExResult
+    {
+        public string Key { get; set; }
+        public string Assignee { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+
+        public double TotalDays => Math.Round((EndDate - StartDate).TotalDays, 1);
     }
 }

@@ -4,7 +4,7 @@
       "commandName": "Executable",
       "executablePath": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
       "commandLineArgs": "-NoLogo -NoProfile -NoExit -File .\\debug.ps1 AgileCli",
-      "workingDirectory": "C:\\repos\\oss\\agile-cli"
+      "workingDirectory": "C:\\repos\\nick\\agile-cli"
     }
   }
 }
