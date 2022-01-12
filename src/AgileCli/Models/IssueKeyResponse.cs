@@ -106,6 +106,7 @@ namespace AgileCli.Models
             set => _assignee = value ?? new Assignee { DisplayName = "Unassigned" };
         }
 
+        public DateTime ResolutionDate { get; set; }
         //public Status Status { get; set; }
 
         public override string ToString()

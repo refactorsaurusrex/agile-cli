@@ -57,12 +57,17 @@ namespace AgileCli.Services
             {
                 var response = await _jira.GetIssueChangeLog(key.Key);
                 var changes = response.Changes.Where(x => x.Details.Any(y => y.Type == "status")).ToList();
+
+                var timeline = new IssueTimeline(changes);
+
                 var capex = new CapExResult
                 {
                     Assignee = key.Fields.Assignee.DisplayName,
                     Key = key.Key,
-                    StartDate = changes.Select(x => x.Timestamp).Min(),
-                    EndDate = changes.Select(x => x.Timestamp).Max()
+                    TotalDays = timeline.TotalDaysInProgress(),
+                    ResolutionDate = key.Fields.ResolutionDate.ToShortDateString()
+                    //StartDate = changes.Select(x => x.Timestamp).Min(),
+                    //EndDate = changes.Select(x => x.Timestamp).Max()
                 };
 
                 result.Add(capex);
@@ -186,9 +191,89 @@ namespace AgileCli.Services
     {
         public string Key { get; set; }
         public string Assignee { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public double TotalDays { get; set; }
+        public string ResolutionDate { get; set; }
+        //public DateTime StartDate { get; set; }
+        //public DateTime EndDate { get; set; }
+        //public double TotalDays => Math.Round((EndDate - StartDate).TotalDays, 1);
+    }
 
-        public double TotalDays => Math.Round((EndDate - StartDate).TotalDays, 1);
+    public class IssueTimeline
+    {
+        private static readonly List<string> _inProgressStatuses = new List<string>
+        {
+            "In Development",
+            "In Validation",
+            "In Progress",
+            "In Review",
+            "Waiting for Engineering",
+            "Pending",
+            "Escalated",
+            "Work in progress",
+            "Selected For Remediation",
+            "Blocked",
+            "Specify",
+            "Validation",
+            "Waiting for customer",
+            "Implementing",
+            "Planning",
+            "Under investigation",
+            "Selected For Acceptance",
+            "Remediation In Progress",
+            "Risk Not Accepted",
+            "Risk Acceptance Expired",
+            "Remediation Needed",
+            "Ready For Prod",
+            "Gathering Feedback"
+        };
+        private readonly List<IssueStatusChange> _changes;
+        //private readonly (IssueStatusChange, int) _changesWithDays;
+
+        public IssueTimeline(IEnumerable<ChangeLogItem> items)
+        {
+            var may1 = new DateTime(2021, 5, 1);
+            _changes = items.OrderBy(x => x.Timestamp).Select(x => new IssueStatusChange
+            {
+                CurrentStatus = x.Details.Single(y => y.Type == "status").ToStatus, 
+                DateTime = x.Timestamp < may1 ? may1 : x.Timestamp
+            }).ToList();
+
+            for (var i = 0; i < _changes.Count - 1; i++)
+            {
+                var days = Math.Round((_changes[i + 1].DateTime - _changes[i].DateTime).TotalDays, 1);
+                var weekends = GetWeekendDaysCount(_changes[i].DateTime, _changes[i + 1].DateTime);
+                _changes[i].DaysInProgress = days - weekends;
+            }
+        }
+
+        private int GetWeekendDaysCount(DateTime from, DateTime to)
+        {
+            var dayDifference = (int)to.Subtract(from).TotalDays;
+            return Enumerable
+                .Range(1, dayDifference)
+                .Select(x => from.AddDays(x))
+                .Count(x => x.DayOfWeek == DayOfWeek.Saturday || x.DayOfWeek == DayOfWeek.Sunday);
+        }
+
+        public double TotalDaysInProgress()
+        {
+            var totalDays = 0.0;
+            foreach (var change in _changes)
+            {
+                if (_inProgressStatuses.Contains(change.CurrentStatus))
+                {
+                    totalDays += change.DaysInProgress;
+                }
+            }
+
+            return totalDays;
+        }
+    }
+
+    public class IssueStatusChange
+    {
+        public DateTime DateTime { get; set; }
+        public string CurrentStatus { get; set; }
+        public double DaysInProgress { get; set; }
     }
 }
